@@ -4,23 +4,20 @@ import Spacer from "../../components/Spacer"
 import ThemedText from "../../components/ThemedText"
 import ThemedView from "../../components/ThemedView"
 
-const Profile = () => {
+const Create = () => {
     return (
         <ThemedView style={styles.container}>
 
             <ThemedText title={true} style={styles.heading}>
-                Your Email
+                Add a New Book
             </ThemedText>
-            <Spacer />
-
-            <ThemedText>Time to start reading some books...</ThemedText>
             <Spacer />
 
         </ThemedView>
     )
 }
 
-export default Profile
+export default Create
 
 const styles = StyleSheet.create({
     container: {
