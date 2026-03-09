@@ -7,6 +7,7 @@ import { Color, Link } from 'expo-router'
 import { Colors } from '../../constants/Colors'
 import ThemedButton from '../../components/ThemedButton'
 import ThemedTextInput from '../../components/ThemedTextInput'
+import useUser from '../../hooks/useUser'
 
 //themed component
 
@@ -15,8 +16,11 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    const { user } = useUser();
+
     const handleSubmit = () => {
-        console.log("login form submitted", email, password)
+        console.log("User value: ", user);
+        console.log("login form submitted", email, password);
     }
     return (
         <ThemedView style={styles.container}>
