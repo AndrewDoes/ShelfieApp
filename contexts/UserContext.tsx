@@ -10,6 +10,7 @@ interface User {
 
 interface UserContextType {
     user: User | null
+    authChecked: boolean
     login: (data: LoginParams) => Promise<void>
     register: (data: LoginParams) => Promise<void>
     logout: () => Promise<void>
@@ -41,10 +42,11 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 id: response.$id,
                 email: response.email
             });
-            setAuthChecked(true);
             router.replace('/(dashboard)/profile');
         } catch (error) {
             setUser(null);
+        } finally {
+            setAuthChecked(true);
         }
     }
 
@@ -86,13 +88,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
             // If the error is because no session exists, we still want to clear the user state
             console.log("Logout error (likely no session):", error.message);
         } finally {
-            setAuthChecked(false);
             setUser(null);
+            setAuthChecked(true);
         }
     }
 
     return (
-        <UserContext.Provider value={{ user, login, register, logout }}>
+        <UserContext.Provider value={{ user, authChecked, login, register, logout }}>
             {children}
         </UserContext.Provider>
     )

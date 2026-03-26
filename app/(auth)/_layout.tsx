@@ -3,6 +3,7 @@ import React from 'react'
 import { StatusBar, useColorScheme } from 'react-native'
 import { Colors } from '../../constants/Colors'
 import useUser from '../../hooks/useUser'
+import GuestOnly from '../../components/auth/GuestOnly'
 
 export default function AuthLayout() {
     const { user } = useUser();
@@ -18,13 +19,13 @@ export default function AuthLayout() {
             : Colors.light
 
     return (
-        <>
+        <GuestOnly>
             <StatusBar barStyle={'default'} backgroundColor={theme.navBackground} />
             <Stack screenOptions={{
                 animation: 'none',
                 headerStyle: { backgroundColor: theme.navBackground },
                 headerTintColor: theme.title
             }} />
-        </>
+        </GuestOnly>
     )
 }
