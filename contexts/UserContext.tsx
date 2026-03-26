@@ -24,28 +24,25 @@ export const UserContext = createContext<UserContextType | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | null>(null);
+    const [authChecked, setAuthChecked] = useState(false);
 
     useEffect(() => {
         const init = async () => {
-            try {
-                // DEBUG: Logout on every app start for testing purposes
-                await logout();
-            } catch (e) {
-                // Ignore errors if no session exists to logout
-            }
-            await checkSession();
+            await getInitialUserValue();
         };
 
         init();
     }, []);
 
-    async function checkSession() {
+    async function getInitialUserValue() {
         try {
             const response = await account.get();
             setUser({
                 id: response.$id,
                 email: response.email
             });
+            setAuthChecked(true);
+            router.replace('/(dashboard)/profile');
         } catch (error) {
             setUser(null);
         }
@@ -83,11 +80,13 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async function logout() {
         try {
             await account.deleteSession('current');
+            console.log("Session Deleted")
             router.replace('/')
         } catch (error: any) {
             // If the error is because no session exists, we still want to clear the user state
             console.log("Logout error (likely no session):", error.message);
         } finally {
+            setAuthChecked(false);
             setUser(null);
         }
     }
