@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
 import ThemedView from '../../components/ThemedView'
 import Spacer from '../../components/Spacer'
 import ThemedText from '../../components/ThemedText'
-import { Color, Link } from 'expo-router'
+import { Color, Link, useRouter } from 'expo-router'
 import { Colors } from '../../constants/Colors'
 import ThemedButton from '../../components/ThemedButton'
 import ThemedTextInput from '../../components/ThemedTextInput'
@@ -15,12 +15,19 @@ import useUser from '../../hooks/useUser'
 const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [error, setError] = useState(null);
 
-    const { user } = useUser();
+    const { login } = useUser();
+    const router = useRouter();
 
-    const handleSubmit = () => {
-        console.log("User value: ", user);
-        console.log("login form submitted", email, password);
+    const handleSubmit = async () => {
+        setError(null);
+        try {
+            await login({ email, password });
+            router.replace('/(dashboard)/profile');
+        } catch (err: any) {
+            setError(err.message);
+        }
     }
     return (
         <ThemedView style={styles.container}>
@@ -42,6 +49,8 @@ const Login = () => {
             <ThemedButton onPress={handleSubmit} style={{ marginTop: 20 }}>
                 <Text style={{ color: '#f2f2f2' }}>Login</Text>
             </ThemedButton>
+            <Spacer height={40} />
+            {error && <Text style={styles.error}>{error}</Text>}
             <Spacer height={40} />
             <Link href='/register'>
                 <ThemedText style={{ textAlign: 'center' }}>
@@ -76,5 +85,14 @@ const styles = StyleSheet.create({
     },
     pressed: {
         opacity: 0.8
+    },
+    error: {
+        color: Colors.warning,
+        padding: 10,
+        backgroundColor: '#f5c1c8',
+        borderColor: Colors.warning,
+        borderWidth: 1,
+        borderRadius: 6,
+        marginHorizontal: 10
     }
 })

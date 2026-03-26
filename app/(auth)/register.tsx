@@ -1,19 +1,34 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Keyboard, StyleSheet, Text, TouchableWithoutFeedback, View } from 'react-native'
 import ThemedView from '../../components/ThemedView'
 import Spacer from '../../components/Spacer'
 import ThemedText from '../../components/ThemedText'
-import { Link } from 'expo-router'
+import { Link, useRouter } from 'expo-router'
 import ThemedButton from '../../components/ThemedButton'
 import ThemedTextInput from '../../components/ThemedTextInput'
+import useUser from '../../hooks/useUser'
+import { Colors } from '../../constants/Colors'
 
 //themed component
 
 const Register = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const handleSubmit = () => {
-        console.log('register form submitted')
+    const [error, setError] = useState<string | null>(null);
+
+    const { register, login } = useUser();
+    const router = useRouter();
+
+    const handleSubmit = async () => {
+        setError(null);
+        try {
+            await register({ email, password });
+            // Automatically log in after registration
+            await login({ email, password });
+            router.replace('/(dashboard)/profile');
+        } catch (err: any) {
+            setError(err.message);
+        }
     }
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -41,6 +56,9 @@ const Register = () => {
                 <ThemedButton onPress={handleSubmit} style={{ marginTop: 20 }} >
                     <Text style={{ color: '#f2f2f2', }}>Register</Text>
                 </ThemedButton>
+
+                <Spacer height={40} />
+                {error && <Text style={styles.error}>{error}</Text>}
 
                 <Spacer height={20} />
                 <Link href='/login'>
@@ -72,6 +90,15 @@ const styles = StyleSheet.create({
         marginBottom: 30,
         width: '70%',
         textAlign: 'center'
+    },
+    error: {
+        color: Colors.warning,
+        padding: 10,
+        backgroundColor: '#f5c1c8',
+        borderColor: Colors.warning,
+        borderWidth: 1,
+        borderRadius: 6,
+        marginHorizontal: 10
     }
 
 })

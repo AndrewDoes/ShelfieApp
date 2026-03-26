@@ -1,9 +1,15 @@
-import { Stack } from 'expo-router'
+import { Redirect, Stack } from 'expo-router'
 import React from 'react'
 import { StatusBar, useColorScheme } from 'react-native'
 import { Colors } from '../../constants/Colors'
+import useUser from '../../hooks/useUser'
 
 export default function AuthLayout() {
+    const { user } = useUser();
+    if (user) {
+        return <Redirect href="/(dashboard)/profile" />
+    }
+
     const scheme = useColorScheme()
 
     const theme =
