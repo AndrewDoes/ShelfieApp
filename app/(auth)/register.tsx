@@ -63,7 +63,7 @@ const Register = () => {
                 <Spacer height={20} />
                 <Link href='/login'>
                     <ThemedText style={{ textAlign: 'center' }}>
-                        Login Instead
+                        Already Have an Account? <Text style={{ textDecorationLine: 'underline' }}>Login Instead</Text>
                     </ThemedText>
                 </Link>
 

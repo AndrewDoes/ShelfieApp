@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native'
+import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, ToastAndroid, View } from 'react-native'
 import ThemedView from '../../components/ThemedView'
 import Spacer from '../../components/Spacer'
 import ThemedText from '../../components/ThemedText'
@@ -8,7 +8,6 @@ import { Colors } from '../../constants/Colors'
 import ThemedButton from '../../components/ThemedButton'
 import ThemedTextInput from '../../components/ThemedTextInput'
 import useUser from '../../hooks/useUser'
-
 //themed component
 
 
@@ -26,16 +25,25 @@ const Login = () => {
             await login({ email, password });
             router.replace('/(dashboard)/profile');
         } catch (err: any) {
+            ToastAndroid.showWithGravity(
+                err.message,
+                ToastAndroid.SHORT,
+                ToastAndroid.BOTTOM
+            )
             setError(err.message);
         }
     }
     return (
         <ThemedView style={styles.container}>
 
-            <Spacer />
             <ThemedText title={true} style={styles.title}>
                 Login to your account
             </ThemedText>
+            <ThemedText title={false} style={styles.desc}>
+                Welcome Back to ShelfieApp
+            </ThemedText>
+            {/* {error && <Text style={styles.error}>{error}</Text>}
+            <Spacer height={20} /> */}
             <ThemedTextInput
                 placeholder='email'
                 keyboardType='email-address'
@@ -50,14 +58,12 @@ const Login = () => {
                 <Text style={{ color: '#f2f2f2' }}>Login</Text>
             </ThemedButton>
             <Spacer height={40} />
-            {error && <Text style={styles.error}>{error}</Text>}
-            <Spacer height={40} />
             <Link href='/register'>
                 <ThemedText style={{ textAlign: 'center' }}>
-                    Register Instead
+                    Don't Have an Account? <Text style={{ textDecorationLine: 'underline' }}>Register Instead</Text>
                 </ThemedText>
             </Link>
-
+            <Spacer height={40} />
         </ThemedView >
     )
 }
@@ -74,6 +80,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         fontSize: 18,
         marginBottom: 30
+    },
+    desc: {
+        marginTop: 12,
+        marginBottom: 30,
+        width: '70%',
+        textAlign: 'center'
     },
     btn: {
         backgroundColor: Colors.primary,
