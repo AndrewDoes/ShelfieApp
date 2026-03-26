@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from "react";
 import { account } from "../lib/appwrite";
 import { ID } from "react-native-appwrite";
+import { router } from "expo-router";
 
 interface User {
     id: string,
@@ -82,6 +83,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     async function logout() {
         try {
             await account.deleteSession('current');
+            router.replace('/')
         } catch (error: any) {
             // If the error is because no session exists, we still want to clear the user state
             console.log("Logout error (likely no session):", error.message);
