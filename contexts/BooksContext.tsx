@@ -1,6 +1,6 @@
-import React, { createContext, ReactNode, useState } from 'react'
+import React, { createContext, ReactNode, useEffect, useState } from 'react'
 import { databases } from '../lib/appwrite';
-import { ID, Models, Permission, Role } from 'react-native-appwrite';
+import { ID, Models, Permission, Query, Role } from 'react-native-appwrite';
 import useUser from '../hooks/useUser';
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE;
@@ -18,10 +18,6 @@ type CreateBookData = {
     author: string,
     description: string
 }
-
-type MyContextType = {
-    book: Book;
-};
 
 type BooksContextType = {
     books: Book[];
@@ -41,9 +37,30 @@ export function BooksProvider({ children }: { children: ReactNode }) {
 
     async function fetchBooks() {
         try {
+            if (!user?.id) {
+                console.error("FetchBooks: No user ID found. User might not be logged in.", user);
+                return;
+            }
 
+            if (!DATABASE_ID || !COLLECTION_ID) {
+                console.error("FetchBooks: Missing Database ID or Collection ID. Check your .env.local file.");
+                return;
+            }
+
+            const response = await databases.listDocuments(
+                DATABASE_ID,
+                COLLECTION_ID,
+                [
+                    Query.equal('userId', user.id)
+                ]
+            );
+
+            setBooks(response.documents as unknown as Book[]);
+            console.log("Books fetched:", response.documents.length);
+            console.log("Books fetched:", response.documents);
         } catch (err: any) {
-
+            console.error("Error fetching books:", err.message);
+            console.error("Full fetch error:", JSON.stringify(err));
         }
     }
 
@@ -105,6 +122,15 @@ export function BooksProvider({ children }: { children: ReactNode }) {
 
         }
     }
+
+    useEffect(() => {
+        if (user) {
+            fetchBooks();
+        }
+        else {
+            setBooks([]);
+        }
+    }, [user])
 
     return (
         <BooksContext.Provider value={{
