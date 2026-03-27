@@ -1,8 +1,8 @@
 import React, { useContext } from 'react'
-import { UserContext } from '../contexts/UserContext'
+import { BooksContext } from '../contexts/BooksContext';
 
 function useBooks() {
-    const context = useContext(UserContext);
+    const context = useContext(BooksContext);
 
     if (!context) {
         throw new Error("useUser must be used within a BooksProvider");
