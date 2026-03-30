@@ -124,8 +124,15 @@ export function BooksProvider({ children }: { children: ReactNode }) {
 
     async function deleteBook(id: string) {
         try {
-
+            const response = await databases.deleteDocument(
+                DATABASE_ID,
+                COLLECTION_ID,
+                id
+            );
+            setBooks(prev => prev.filter(book => book.$id !== id));
         } catch (err: any) {
+            console.error("Error deleting book:", err.message);
+            console.error("Full error object:", JSON.stringify(err));
 
         }
     }
