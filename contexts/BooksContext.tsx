@@ -1,5 +1,5 @@
 import React, { createContext, ReactNode, useEffect, useState } from 'react'
-import { databases } from '../lib/appwrite';
+import { databases, client } from '../lib/appwrite';
 import { ID, Models, Permission, Query, Role } from 'react-native-appwrite';
 import useUser from '../hooks/useUser';
 
@@ -56,8 +56,8 @@ export function BooksProvider({ children }: { children: ReactNode }) {
             );
 
             setBooks(response.documents as unknown as Book[]);
-            console.log("Books fetched:", response.documents.length);
-            console.log("Books fetched:", response.documents);
+            // console.log("Books fetched:", response.documents.length);
+            // console.log("Books fetched:", response.documents);
         } catch (err: any) {
             console.error("Error fetching books:", err.message);
             console.error("Full fetch error:", JSON.stringify(err));
@@ -124,11 +124,26 @@ export function BooksProvider({ children }: { children: ReactNode }) {
     }
 
     useEffect(() => {
+        let unsubscribe: () => void;
+        const channel = `databases.${DATABASE_ID}.collections.${COLLECTION_ID}.documents`;
         if (user) {
             fetchBooks();
+            unsubscribe = client.subscribe(channel, (response) => {
+                const { events, payload } = response;
+
+                if (events[0].includes("create")) {
+                    setBooks(prevBooks => [...prevBooks, payload as unknown as Book]);
+                }
+            })
         }
         else {
             setBooks([]);
+        }
+
+        return () => {
+            if (unsubscribe) {
+                unsubscribe();
+            }
         }
     }, [user])
 
