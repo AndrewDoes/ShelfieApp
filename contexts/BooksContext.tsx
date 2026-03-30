@@ -24,7 +24,7 @@ type BooksContextType = {
     setBooks: React.Dispatch<React.SetStateAction<Book[]>>;
 
     fetchBooks: () => Promise<void>;
-    fetchBookById: (id: string) => Promise<void>;
+    fetchBookById: (id: string) => Promise<Book | undefined>;
     createBook: (data: CreateBookData) => Promise<void>;
     deleteBook: (id: string) => Promise<void>;
 };
@@ -66,9 +66,16 @@ export function BooksProvider({ children }: { children: ReactNode }) {
 
     async function fetchBookById(id: string) {
         try {
+            const response = await databases.getDocument(
+                DATABASE_ID,
+                COLLECTION_ID,
+                id
+            );
 
+            return response as unknown as Book;
         } catch (err: any) {
-
+            console.error(`Error fetching book with ID ${id}:`, err.message);
+            console.error("Full fetchBookById error:", JSON.stringify(err));
         }
     }
 
